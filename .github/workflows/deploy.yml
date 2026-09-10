@@ -25,28 +25,44 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
-          node-version: lts/*
-          cache: npm
+          node-version: '18.x'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          if [ -f package-lock.json ]; then
+            echo "package-lock.json found — running npm ci"
+            npm ci
+          else
+            echo "No package-lock.json — running npm install to generate lockfile"
+            npm install
+          fi
 
       - name: Build website
         run: npm run build
 
+      - name: Show build output
+        run: |
+          if [ -d ./dist ]; then
+            echo "Found ./dist contents:"; ls -la ./dist
+          else
+            echo "Error: ./dist not found. Listing workspace:"; ls -la
+            exit 1
+          fi
+
       - name: Setup GitHub Pages
-        uses: actions/configure-pages@v6
+        uses: actions/configure-pages@v3
 
       - name: Upload website
-        uses: actions/upload-pages-artifact@v5
+        uses: actions/upload-pages-artifact@v1
         with:
           path: ./dist
 
       - name: Deploy website
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@v1
