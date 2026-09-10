@@ -1,0 +1,10 @@
+{
+  "description": "Create a personalized mobile-friendly website showcasing your projects with optimized images and detailed descriptions for each project.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
