@@ -4,29 +4,12 @@ import aboutPhoto from "./imports/WhatsApp_Image_2026-08-28_at_11.52.11_AM.jpeg"
 import bizLedgerImg from "./imports/Opera_Snapshot_2026-08-28_172607_BizLedger.html.png";
 import qrToolImg from "./imports/Opera_Snapshot_2026-08-28_172707_claude.ai.png";
 
-// ─── External URLs & Dynamic Paths ───────────────────────────────────────────
-// Encoded path ensures mobile browsers download correctly without failing on spaces
-const RESUME_URL = `${import.meta.env.BASE_URL}Abdul_Hanan%20CV.pdf`;
+// ─── External URLs & Assets ──────────────────────────────────────────────────
+// Resolves cleanly on GitHub Pages and prevents Incognito download blocks
+const RESUME_URL = `${import.meta.env.BASE_URL}resume.pdf`;
 const PORTFOLIO_URL = "https://github.com/Abdul-Hanan-Abrar";
 const LINKEDIN = "https://www.linkedin.com/in/abdul-hanan-abrar-8b6a9140b/";
 const EMAIL = "abdulhananabrar941@gmail.com";
-
-// ─── Smart Email Action Dispatcher ────────────────────────────────────────────
-// Mobile: triggers native Gmail app via mailto:
-// Desktop: opens Gmail web composer directly in a new browser tab
-const handleEmailAction = (e?: React.MouseEvent, subject = "", body = "") => {
-  if (e) e.preventDefault();
-  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  const encSubject = encodeURIComponent(subject);
-  const encBody = encodeURIComponent(body);
-
-  if (isMobile) {
-    window.location.href = `mailto:${EMAIL}?subject=${encSubject}&body=${encBody}`;
-  } else {
-    const composeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${EMAIL}&su=${encSubject}&body=${encBody}`;
-    window.open(composeUrl, "_blank", "noopener,noreferrer");
-  }
-};
 
 // ─── Color constants ─────────────────────────────────────────────────────────
 const C = {
@@ -335,6 +318,7 @@ export default function App() {
   const [activeSection, setActiveSection] = useState("home");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [formData, setFormData] = useState({ name: "", email: "", topic: "", message: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formSent, setFormSent] = useState(false);
 
   const navLinks = [
@@ -394,12 +378,38 @@ export default function App() {
     },
   ];
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  // ── Contact Form Direct Delivery ──
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const subject = `[Portfolio] ${formData.topic} — from ${formData.name}`;
-    const body = `Name: ${formData.name}\nEmail: ${formData.email}\nTopic: ${formData.topic}\n\n${formData.message}`;
-    handleEmailAction(undefined, subject, body);
-    setFormSent(true);
+    setIsSubmitting(true);
+
+    try {
+      // Sends message directly to your inbox using FormSubmit background API
+      const response = await fetch("https://formsubmit.co/ajax/abdulhananabrar941@gmail.com", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          topic: formData.topic,
+          message: formData.message,
+          _subject: `[Portfolio] New message from ${formData.name}: ${formData.topic}`,
+        }),
+      });
+
+      if (response.ok) {
+        setFormSent(true);
+      } else {
+        alert("Something went wrong. Please reach out directly to abdulhananabrar941@gmail.com");
+      }
+    } catch {
+      alert("Network error. Please reach out directly to abdulhananabrar941@gmail.com");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -438,7 +448,7 @@ export default function App() {
           </div>
 
           <div className="hidden lg:flex items-center gap-3">
-            <BtnOutlineAmber href={RESUME_URL} download="Abdul_Hanan_CV.pdf" target="_blank">Resume</BtnOutlineAmber>
+            <BtnOutlineAmber href={RESUME_URL} target="_blank">Resume</BtnOutlineAmber>
             <BtnPrimary href={PORTFOLIO_URL} target="_blank">Portfolio</BtnPrimary>
             <a href={LINKEDIN} target="_blank" rel="noopener noreferrer" className="text-sm font-medium" style={{ color: C.muted }}>LinkedIn ↗</a>
           </div>
@@ -474,7 +484,7 @@ export default function App() {
               </button>
             ))}
             <div className="flex gap-3 mt-3 pt-3" style={{ borderTop: `1px solid ${C.border}` }}>
-              <BtnOutlineAmber href={RESUME_URL} download="Abdul_Hanan_CV.pdf" target="_blank">Resume</BtnOutlineAmber>
+              <BtnOutlineAmber href={RESUME_URL} target="_blank">Resume</BtnOutlineAmber>
               <BtnPrimary href={PORTFOLIO_URL} target="_blank">Portfolio</BtnPrimary>
             </div>
           </div>
@@ -532,9 +542,9 @@ export default function App() {
               <div className="flex flex-wrap gap-3 mb-4">
                 <BtnPrimary onClick={() => scrollTo("ai-tutor")}>Explore AI Tutor Work</BtnPrimary>
                 <BtnOutlineAmber onClick={() => scrollTo("experience")}>View Experience</BtnOutlineAmber>
+                {/* Clean PDF opener that never fails on mobile or incognito */}
                 <a
                   href={RESUME_URL}
-                  download="Abdul_Hanan_CV.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm font-medium px-5 py-2.5 rounded-lg transition-colors hover:opacity-80 inline-flex items-center justify-center"
@@ -652,7 +662,7 @@ export default function App() {
 
               <div className="flex flex-wrap gap-3">
                 <BtnPrimary onClick={() => scrollTo("ai-tutor")}>AI Tutor Work</BtnPrimary>
-                <BtnOutlineAmber href={RESUME_URL} download="Abdul_Hanan_CV.pdf" target="_blank">Download Resume</BtnOutlineAmber>
+                <BtnOutlineAmber href={RESUME_URL} target="_blank">Download Resume</BtnOutlineAmber>
               </div>
             </div>
 
@@ -1076,7 +1086,7 @@ export default function App() {
               <p className="urdu text-base" style={{ color: C.amber }}>میرا ریزومے ڈاؤن لوڈ کریں</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3">
-              <BtnPrimary href={RESUME_URL} download="Abdul_Hanan_CV.pdf" target="_blank">Download PDF Resume</BtnPrimary>
+              <BtnPrimary href={RESUME_URL} target="_blank">Download PDF Resume</BtnPrimary>
               <a
                 href={LINKEDIN}
                 target="_blank"
@@ -1127,7 +1137,6 @@ export default function App() {
               <div className="space-y-3 mb-6">
                 <a
                   href={`mailto:${EMAIL}`}
-                  onClick={(e) => handleEmailAction(e, "Portfolio Inquiry", "Hi Abdul Hanan,\n\n")}
                   className="flex items-center gap-3 text-sm hover:opacity-70 transition-opacity"
                   style={{ color: C.body }}
                 >
@@ -1221,10 +1230,11 @@ export default function App() {
 
                   <button
                     type="submit"
-                    className="w-full py-3 rounded-lg text-sm font-semibold text-white transition-all hover:opacity-90 active:scale-95"
+                    disabled={isSubmitting}
+                    className="w-full py-3 rounded-lg text-sm font-semibold text-white transition-all hover:opacity-90 active:scale-95 disabled:opacity-50"
                     style={{ background: C.green }}
                   >
-                    Send Message
+                    {isSubmitting ? "Sending..." : "Send Message"}
                   </button>
                 </form>
               )}
@@ -1254,7 +1264,7 @@ export default function App() {
               </button>
             ))}
             <a href={LINKEDIN} target="_blank" rel="noopener noreferrer" className="text-sm transition-colors hover:text-white" style={{ color: "#787878" }}>LinkedIn ↗</a>
-            <a href={RESUME_URL} download="Abdul_Hanan_CV.pdf" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors hover:text-white" style={{ color: "#787878" }}>Download Resume</a>
+            <a href={RESUME_URL} target="_blank" rel="noopener noreferrer" className="text-sm transition-colors hover:text-white" style={{ color: "#787878" }}>Download Resume</a>
           </div>
           <div style={{ borderTop: "1px solid #2a2a2a" }} className="pt-6">
             <p className="text-xs" style={{ color: "#555" }}>© 2026 Abdul Hanan. All rights reserved.</p>
