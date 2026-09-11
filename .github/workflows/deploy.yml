@@ -2,8 +2,7 @@ name: Deploy Figma Make Website
 
 on:
   push:
-    branches:
-      - main
+    branches: ['main']
   workflow_dispatch:
 
 permissions:
@@ -12,7 +11,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: 'pages'
   cancel-in-progress: true
 
 jobs:
@@ -20,9 +19,7 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,39 +27,22 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '18.x'
-          cache: 'npm'
+          node-version: 20
 
       - name: Install dependencies
-        run: |
-          if [ -f package-lock.json ]; then
-            echo "package-lock.json found — running npm ci"
-            npm ci
-          else
-            echo "No package-lock.json — running npm install to generate lockfile"
-            npm install
-          fi
+        run: npm install
 
       - name: Build website
         run: npm run build
 
-      - name: Show build output
-        run: |
-          if [ -d ./dist ]; then
-            echo "Found ./dist contents:"; ls -la ./dist
-          else
-            echo "Error: ./dist not found. Listing workspace:"; ls -la
-            exit 1
-          fi
-
       - name: Setup GitHub Pages
-        uses: actions/configure-pages@v3
+        uses: actions/configure-pages@v5
 
       - name: Upload website
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist
+          path: './dist'
 
       - name: Deploy website
         id: deployment
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v4
