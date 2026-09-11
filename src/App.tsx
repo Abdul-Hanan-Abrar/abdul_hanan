@@ -4,12 +4,29 @@ import aboutPhoto from "./imports/WhatsApp_Image_2026-08-28_at_11.52.11_AM.jpeg"
 import bizLedgerImg from "./imports/Opera_Snapshot_2026-08-28_172607_BizLedger.html.png";
 import qrToolImg from "./imports/Opera_Snapshot_2026-08-28_172707_claude.ai.png";
 
-// ─── External URLs & Assets ──────────────────────────────────────────────────
-// Resolves cleanly on GitHub Pages and prevents Incognito download blocks
+// ─── External URLs & Dynamic Paths ───────────────────────────────────────────
 const RESUME_URL = `${import.meta.env.BASE_URL}resume.pdf`;
 const PORTFOLIO_URL = "https://github.com/Abdul-Hanan-Abrar";
 const LINKEDIN = "https://www.linkedin.com/in/abdul-hanan-abrar-8b6a9140b/";
 const EMAIL = "abdulhananabrar941@gmail.com";
+
+// ─── Smart Email Action Dispatcher ────────────────────────────────────────────
+// Mobile: launches native Gmail / Mail application
+// Desktop: opens Gmail web composer in a new browser tab
+const handleEmailClick = (e: React.MouseEvent) => {
+  e.preventDefault();
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  if (isMobile) {
+    window.location.href = `mailto:${EMAIL}`;
+  } else {
+    window.open(
+      `https://mail.google.com/mail/?view=cm&fs=1&to=${EMAIL}`,
+      "_blank",
+      "noopener,noreferrer"
+    );
+  }
+};
 
 // ─── Color constants ─────────────────────────────────────────────────────────
 const C = {
@@ -378,24 +395,23 @@ export default function App() {
     },
   ];
 
-  // ── Contact Form Direct Delivery ──
+  // ─── Direct Form Delivery to abdulhananabrar941@gmail.com ─────────────────────
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      // Sends message directly to your inbox using FormSubmit background API
-      const response = await fetch("https://formsubmit.co/ajax/abdulhananabrar941@gmail.com", {
+      const response = await fetch(`https://formsubmit.co/ajax/${EMAIL}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
         body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          topic: formData.topic,
-          message: formData.message,
+          Name: formData.name,
+          Email: formData.email,
+          Topic: formData.topic,
+          Message: formData.message,
           _subject: `[Portfolio] New message from ${formData.name}: ${formData.topic}`,
         }),
       });
@@ -403,7 +419,7 @@ export default function App() {
       if (response.ok) {
         setFormSent(true);
       } else {
-        alert("Something went wrong. Please reach out directly to abdulhananabrar941@gmail.com");
+        alert("Failed to send message. Please contact directly via email.");
       }
     } catch {
       alert("Network error. Please reach out directly to abdulhananabrar941@gmail.com");
@@ -542,7 +558,6 @@ export default function App() {
               <div className="flex flex-wrap gap-3 mb-4">
                 <BtnPrimary onClick={() => scrollTo("ai-tutor")}>Explore AI Tutor Work</BtnPrimary>
                 <BtnOutlineAmber onClick={() => scrollTo("experience")}>View Experience</BtnOutlineAmber>
-                {/* Clean PDF opener that never fails on mobile or incognito */}
                 <a
                   href={RESUME_URL}
                   target="_blank"
@@ -1135,8 +1150,10 @@ export default function App() {
                 Whether you're interested in AI Urdu training, customer support work, or discussing any opportunity — feel free to reach out.
               </p>
               <div className="space-y-3 mb-6">
+                {/* Fixed: Smart Email Click Handler */}
                 <a
                   href={`mailto:${EMAIL}`}
+                  onClick={handleEmailClick}
                   className="flex items-center gap-3 text-sm hover:opacity-70 transition-opacity"
                   style={{ color: C.body }}
                 >
