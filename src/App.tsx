@@ -4,14 +4,29 @@ import aboutPhoto from "./imports/WhatsApp_Image_2026-08-28_at_11.52.11_AM.jpeg"
 import bizLedgerImg from "./imports/Opera_Snapshot_2026-08-28_172607_BizLedger.html.png";
 import qrToolImg from "./imports/Opera_Snapshot_2026-08-28_172707_claude.ai.png";
 
-// ─── External URLs & Assets ──────────────────────────────────────────────────
-// Matches the exact filename in your public/ folder
-const RESUME_URL = "./Abdul_Hanan CV.pdf";
+// ─── External URLs & Dynamic Paths ───────────────────────────────────────────
+// Encoded path ensures mobile browsers download correctly without failing on spaces
+const RESUME_URL = `${import.meta.env.BASE_URL}Abdul_Hanan%20CV.pdf`;
 const PORTFOLIO_URL = "https://github.com/Abdul-Hanan-Abrar";
 const LINKEDIN = "https://www.linkedin.com/in/abdul-hanan-abrar-8b6a9140b/";
 const EMAIL = "abdulhananabrar941@gmail.com";
-// Direct web Gmail compose URL (opens in new tab on Chrome, Opera, Safari, Edge, Android, iOS)
-const GMAIL_COMPOSE_URL = `https://mail.google.com/mail/?view=cm&fs=1&to=${EMAIL}`;
+
+// ─── Smart Email Action Dispatcher ────────────────────────────────────────────
+// Mobile: triggers native Gmail app via mailto:
+// Desktop: opens Gmail web composer directly in a new browser tab
+const handleEmailAction = (e?: React.MouseEvent, subject = "", body = "") => {
+  if (e) e.preventDefault();
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const encSubject = encodeURIComponent(subject);
+  const encBody = encodeURIComponent(body);
+
+  if (isMobile) {
+    window.location.href = `mailto:${EMAIL}?subject=${encSubject}&body=${encBody}`;
+  } else {
+    const composeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${EMAIL}&su=${encSubject}&body=${encBody}`;
+    window.open(composeUrl, "_blank", "noopener,noreferrer");
+  }
+};
 
 // ─── Color constants ─────────────────────────────────────────────────────────
 const C = {
@@ -381,12 +396,9 @@ export default function App() {
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const subject = encodeURIComponent(`[Portfolio] ${formData.topic} — from ${formData.name}`);
-    const body = encodeURIComponent(
-      `Name: ${formData.name}\nEmail: ${formData.email}\nTopic: ${formData.topic}\n\n${formData.message}`
-    );
-    const composeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${EMAIL}&su=${subject}&body=${body}`;
-    window.open(composeUrl, "_blank", "noopener,noreferrer");
+    const subject = `[Portfolio] ${formData.topic} — from ${formData.name}`;
+    const body = `Name: ${formData.name}\nEmail: ${formData.email}\nTopic: ${formData.topic}\n\n${formData.message}`;
+    handleEmailAction(undefined, subject, body);
     setFormSent(true);
   };
 
@@ -426,7 +438,7 @@ export default function App() {
           </div>
 
           <div className="hidden lg:flex items-center gap-3">
-            <BtnOutlineAmber href={RESUME_URL} download="Abdul_Hanan_CV.pdf">Resume</BtnOutlineAmber>
+            <BtnOutlineAmber href={RESUME_URL} download="Abdul_Hanan_CV.pdf" target="_blank">Resume</BtnOutlineAmber>
             <BtnPrimary href={PORTFOLIO_URL} target="_blank">Portfolio</BtnPrimary>
             <a href={LINKEDIN} target="_blank" rel="noopener noreferrer" className="text-sm font-medium" style={{ color: C.muted }}>LinkedIn ↗</a>
           </div>
@@ -462,7 +474,7 @@ export default function App() {
               </button>
             ))}
             <div className="flex gap-3 mt-3 pt-3" style={{ borderTop: `1px solid ${C.border}` }}>
-              <BtnOutlineAmber href={RESUME_URL} download="Abdul_Hanan_CV.pdf">Resume</BtnOutlineAmber>
+              <BtnOutlineAmber href={RESUME_URL} download="Abdul_Hanan_CV.pdf" target="_blank">Resume</BtnOutlineAmber>
               <BtnPrimary href={PORTFOLIO_URL} target="_blank">Portfolio</BtnPrimary>
             </div>
           </div>
@@ -523,7 +535,9 @@ export default function App() {
                 <a
                   href={RESUME_URL}
                   download="Abdul_Hanan_CV.pdf"
-                  className="text-sm font-medium px-5 py-2.5 rounded-lg transition-colors hover:opacity-80 inline-flex items-center"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-medium px-5 py-2.5 rounded-lg transition-colors hover:opacity-80 inline-flex items-center justify-center"
                   style={{ border: `1.5px solid ${C.border}`, color: C.body }}
                 >
                   Download Resume
@@ -638,7 +652,7 @@ export default function App() {
 
               <div className="flex flex-wrap gap-3">
                 <BtnPrimary onClick={() => scrollTo("ai-tutor")}>AI Tutor Work</BtnPrimary>
-                <BtnOutlineAmber href={RESUME_URL} download="Abdul_Hanan_CV.pdf">Download Resume</BtnOutlineAmber>
+                <BtnOutlineAmber href={RESUME_URL} download="Abdul_Hanan_CV.pdf" target="_blank">Download Resume</BtnOutlineAmber>
               </div>
             </div>
 
@@ -1062,7 +1076,7 @@ export default function App() {
               <p className="urdu text-base" style={{ color: C.amber }}>میرا ریزومے ڈاؤن لوڈ کریں</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3">
-              <BtnPrimary href={RESUME_URL} download="Abdul_Hanan_CV.pdf">Download PDF Resume</BtnPrimary>
+              <BtnPrimary href={RESUME_URL} download="Abdul_Hanan_CV.pdf" target="_blank">Download PDF Resume</BtnPrimary>
               <a
                 href={LINKEDIN}
                 target="_blank"
@@ -1112,9 +1126,8 @@ export default function App() {
               </p>
               <div className="space-y-3 mb-6">
                 <a
-                  href={GMAIL_COMPOSE_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href={`mailto:${EMAIL}`}
+                  onClick={(e) => handleEmailAction(e, "Portfolio Inquiry", "Hi Abdul Hanan,\n\n")}
                   className="flex items-center gap-3 text-sm hover:opacity-70 transition-opacity"
                   style={{ color: C.body }}
                 >
@@ -1241,7 +1254,7 @@ export default function App() {
               </button>
             ))}
             <a href={LINKEDIN} target="_blank" rel="noopener noreferrer" className="text-sm transition-colors hover:text-white" style={{ color: "#787878" }}>LinkedIn ↗</a>
-            <a href={RESUME_URL} download="Abdul_Hanan_CV.pdf" className="text-sm transition-colors hover:text-white" style={{ color: "#787878" }}>Download Resume</a>
+            <a href={RESUME_URL} download="Abdul_Hanan_CV.pdf" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors hover:text-white" style={{ color: "#787878" }}>Download Resume</a>
           </div>
           <div style={{ borderTop: "1px solid #2a2a2a" }} className="pt-6">
             <p className="text-xs" style={{ color: "#555" }}>© 2026 Abdul Hanan. All rights reserved.</p>
