@@ -1,15 +1,16 @@
-import { useState, useEffect, useRef } from "react";
-import heroPhoto from "./imports/WhatsApp_Image_2026-08-28_at_11.53.53_AM.jpeg";
-import aboutPhoto from "./imports/WhatsApp_Image_2026-08-28_at_11.52.11_AM.jpeg";
-import bizLedgerImg from "./imports/Opera_Snapshot_2026-08-28_172607_BizLedger.html.png";
-import qrToolImg from "./imports/Opera_Snapshot_2026-08-28_172707_claude.ai.png";
+import { useState, useEffect } from "react";
+import heroPhoto from "./imports/hero.jpeg";
+import aboutPhoto from "./imports/about.jpeg";
+import bizLedgerImg from "./imports/bizledger.png";
+import qrToolImg from "./imports/qr-tool.png";
 
 // ─── External URLs & Assets ──────────────────────────────────────────────────
-// Points directly to the file placed in your /public folder
 const RESUME_URL = "./Abdul_Hanan_CV.pdf";
-const PORTFOLIO_URL = "https://github.com/Abdul-Hanan-Abrar"; // Replace with your external link if desired
+const PORTFOLIO_URL = "https://github.com/Abdul-Hanan-Abrar";
 const LINKEDIN = "https://www.linkedin.com/in/abdul-hanan-abrar-8b6a9140b/";
 const EMAIL = "abdulhananabrar941@gmail.com";
+// Direct web Gmail compose URL (opens in new tab on Chrome, Opera, Edge, Safari, Mobile)
+const GMAIL_COMPOSE_URL = `https://mail.google.com/mail/?view=cm&fs=1&to=${EMAIL}`;
 
 // ─── Color constants ─────────────────────────────────────────────────────────
 const C = {
@@ -196,7 +197,6 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
         style={{ background: C.white }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Image */}
         <div className="relative w-full" style={{ background: "#0a0a0a" }}>
           <img
             src={project.image}
@@ -222,7 +222,6 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
           </span>
         </div>
 
-        {/* Content */}
         <div className="p-6 sm:p-8">
           <h3 className="text-2xl font-bold mb-1" style={{ color: C.text }}>{project.title}</h3>
           <p className="text-sm font-medium mb-4" style={{ color: C.muted }}>{project.subtitle}</p>
@@ -385,7 +384,9 @@ export default function App() {
     const body = encodeURIComponent(
       `Name: ${formData.name}\nEmail: ${formData.email}\nTopic: ${formData.topic}\n\n${formData.message}`
     );
-    window.location.href = `mailto:${EMAIL}?subject=${subject}&body=${body}`;
+    // Directly opens Gmail compose window with subject and message prefilled
+    const composeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${EMAIL}&su=${subject}&body=${body}`;
+    window.open(composeUrl, "_blank", "noopener,noreferrer");
     setFormSent(true);
   };
 
@@ -518,9 +519,7 @@ export default function App() {
 
               <div className="flex flex-wrap gap-3 mb-4">
                 <BtnPrimary onClick={() => scrollTo("ai-tutor")}>Explore AI Tutor Work</BtnPrimary>
-                {/* Fixed: clicks directly smoothly down to Experience */}
                 <BtnOutlineAmber onClick={() => scrollTo("experience")}>View Experience</BtnOutlineAmber>
-                {/* Fixed: downloads CV from public folder */}
                 <a
                   href={RESUME_URL}
                   download="Abdul_Hanan_CV.pdf"
@@ -1112,7 +1111,14 @@ export default function App() {
                 Whether you're interested in AI Urdu training, customer support work, or discussing any opportunity — feel free to reach out.
               </p>
               <div className="space-y-3 mb-6">
-                <a href={`mailto:${EMAIL}`} className="flex items-center gap-3 text-sm hover:opacity-70 transition-opacity" style={{ color: C.body }}>
+                {/* Fixed: opens Gmail web directly in a new tab */}
+                <a
+                  href={GMAIL_COMPOSE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 text-sm hover:opacity-70 transition-opacity"
+                  style={{ color: C.body }}
+                >
                   <span className="text-base">✉️</span> {EMAIL}
                 </a>
                 <a href={LINKEDIN} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm hover:opacity-70 transition-opacity" style={{ color: C.body }}>
