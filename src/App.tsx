@@ -1,8 +1,15 @@
 import { useState, useEffect, useRef } from "react";
-import heroPhoto from "./imports/WhatsApp_Image_2026-08-28_at_11.53.53_AM.jpeg";
-import aboutPhoto from "./imports/WhatsApp_Image_2026-08-28_at_11.52.11_AM.jpeg";
-import bizLedgerImg from "./imports/Opera_Snapshot_2026-08-28_172607_BizLedger.html.png";
-import qrToolImg from "./imports/Opera_Snapshot_2026-08-28_172707_claude.ai.png";
+import heroPhoto from "./imports/Image.jpeg";
+import aboutPhoto from "./imports/Image.jpeg";
+import bizLedgerImg from "./imports/Image.png";
+import qrToolImg from "./imports/Image.png";
+
+// ─── External URLs & Assets ──────────────────────────────────────────────────
+// Points directly to the file placed in your /public folder
+const RESUME_URL = "./Abdul_Hanan_CV.pdf";
+const PORTFOLIO_URL = "https://github.com/Abdul-Hanan-Abrar"; // Replace with your external link if desired
+const LINKEDIN = "https://www.linkedin.com/in/abdul-hanan-abrar-8b6a9140b/";
+const EMAIL = "abdulhananabrar941@gmail.com";
 
 // ─── Color constants ─────────────────────────────────────────────────────────
 const C = {
@@ -60,29 +67,101 @@ function Tag({ children, green = false }: { children: string; green?: boolean })
   );
 }
 
-function BtnPrimary({ children, onClick, href }: { children: string; onClick?: () => void; href?: string }) {
+function BtnPrimary({
+  children,
+  onClick,
+  href,
+  download,
+  target,
+}: {
+  children: string;
+  onClick?: () => void;
+  href?: string;
+  download?: string | boolean;
+  target?: string;
+}) {
   const cls =
-    "inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 hover:opacity-90 active:scale-95";
+    "inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 hover:opacity-90 active:scale-95 text-center";
   const style = { background: C.green, color: "#fff" };
-  if (href) return <a href={href} className={cls} style={style}>{children}</a>;
+  if (href) {
+    return (
+      <a
+        href={href}
+        download={download}
+        target={target}
+        rel={target === "_blank" ? "noopener noreferrer" : undefined}
+        className={cls}
+        style={style}
+      >
+        {children}
+      </a>
+    );
+  }
   return <button onClick={onClick} className={cls} style={style}>{children}</button>;
 }
 
-function BtnOutlineAmber({ children, href }: { children: string; href?: string }) {
+function BtnOutlineAmber({
+  children,
+  onClick,
+  href,
+  download,
+  target,
+}: {
+  children: string;
+  onClick?: () => void;
+  href?: string;
+  download?: string | boolean;
+  target?: string;
+}) {
   const cls =
-    "inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 hover:opacity-90 active:scale-95";
+    "inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 hover:opacity-90 active:scale-95 text-center";
   const style = { border: `1.5px solid ${C.amber}`, color: C.amber, background: "transparent" };
-  if (href) return <a href={href} className={cls} style={style}>{children}</a>;
-  return <button className={cls} style={style}>{children}</button>;
+  if (href) {
+    return (
+      <a
+        href={href}
+        download={download}
+        target={target}
+        rel={target === "_blank" ? "noopener noreferrer" : undefined}
+        className={cls}
+        style={style}
+      >
+        {children}
+      </a>
+    );
+  }
+  return <button onClick={onClick} className={cls} style={style}>{children}</button>;
 }
 
-function BtnOutlineWhite({ children, onClick }: { children: string; onClick?: () => void }) {
+function BtnOutlineWhite({
+  children,
+  onClick,
+  href,
+  target,
+}: {
+  children: string;
+  onClick?: () => void;
+  href?: string;
+  target?: string;
+}) {
+  const cls =
+    "inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 hover:bg-white/10 active:scale-95 text-center";
+  const style = { border: "1.5px solid rgba(255,255,255,0.5)", color: "#fff" };
+  if (href) {
+    return (
+      <a
+        href={href}
+        target={target}
+        rel={target === "_blank" ? "noopener noreferrer" : undefined}
+        className={cls}
+        style={style}
+      >
+        {children}
+      </a>
+    );
+  }
   return (
-    <button
-      onClick={onClick}
-      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 hover:bg-white/10 active:scale-95"
-      style={{ border: "1.5px solid rgba(255,255,255,0.5)", color: "#fff" }}
-    >
+    <button onClick={onClick} className={cls} style={style}>
       {children}
     </button>
   );
@@ -191,7 +270,6 @@ function AudioCard({
       className="rounded-xl overflow-hidden transition-all duration-200 hover:shadow-md"
       style={{ background: C.white, border: `1px solid ${C.border}`, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}
     >
-      {/* Card header */}
       <div className="p-5 flex flex-col gap-3">
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -220,7 +298,6 @@ function AudioCard({
         <p className="text-xs" style={{ color: C.muted }}>Duration: {duration}</p>
       </div>
 
-      {/* Inline Google Drive audio player — shown on play click */}
       {open && (
         <div style={{ borderTop: `1px solid ${C.border}` }}>
           <iframe
@@ -302,9 +379,6 @@ export default function App() {
     },
   ];
 
-  const LINKEDIN = "https://www.linkedin.com/in/abdul-hanan-abrar-8b6a9140b/";
-  const EMAIL = "abdulhananabrar941@gmail.com";
-
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const subject = encodeURIComponent(`[Portfolio] ${formData.topic} — from ${formData.name}`);
@@ -351,8 +425,8 @@ export default function App() {
           </div>
 
           <div className="hidden lg:flex items-center gap-3">
-            <BtnOutlineAmber href="#">Resume</BtnOutlineAmber>
-            <BtnPrimary href="#">Portfolio</BtnPrimary>
+            <BtnOutlineAmber href={RESUME_URL} download="Abdul_Hanan_CV.pdf">Resume</BtnOutlineAmber>
+            <BtnPrimary href={PORTFOLIO_URL} target="_blank">Portfolio</BtnPrimary>
             <a href={LINKEDIN} target="_blank" rel="noopener noreferrer" className="text-sm font-medium" style={{ color: C.muted }}>LinkedIn ↗</a>
           </div>
 
@@ -387,8 +461,8 @@ export default function App() {
               </button>
             ))}
             <div className="flex gap-3 mt-3 pt-3" style={{ borderTop: `1px solid ${C.border}` }}>
-              <BtnOutlineAmber href="#">Resume</BtnOutlineAmber>
-              <BtnPrimary href="#">Portfolio</BtnPrimary>
+              <BtnOutlineAmber href={RESUME_URL} download="Abdul_Hanan_CV.pdf">Resume</BtnOutlineAmber>
+              <BtnPrimary href={PORTFOLIO_URL} target="_blank">Portfolio</BtnPrimary>
             </div>
           </div>
         )}
@@ -399,7 +473,7 @@ export default function App() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-10 lg:gap-20 items-center">
 
-            {/* Left — all content */}
+            {/* Left */}
             <div>
               <span
                 className="inline-block text-xs font-semibold px-3 py-1 rounded-full mb-5"
@@ -408,7 +482,6 @@ export default function App() {
                 Faisalabad, Pakistan · BSc Computer Science · 2+ Years Experience
               </span>
 
-              {/* Name + circle photo side by side */}
               <div className="flex items-center gap-5 sm:gap-8 mb-4">
                 <h1
                   className="font-bold leading-none tracking-tight"
@@ -416,7 +489,6 @@ export default function App() {
                 >
                   ABDUL<br />HANAN
                 </h1>
-                {/* Circle photo — mobile: show here; desktop: hidden (shown in right col) */}
                 <div
                   className="lg:hidden flex-shrink-0 overflow-hidden rounded-full"
                   style={{
@@ -446,13 +518,17 @@ export default function App() {
 
               <div className="flex flex-wrap gap-3 mb-4">
                 <BtnPrimary onClick={() => scrollTo("ai-tutor")}>Explore AI Tutor Work</BtnPrimary>
-                <BtnOutlineAmber href="#">View Experience</BtnOutlineAmber>
-                <button
-                  className="text-sm font-medium px-5 py-2.5 rounded-lg transition-colors hover:opacity-80"
+                {/* Fixed: clicks directly smoothly down to Experience */}
+                <BtnOutlineAmber onClick={() => scrollTo("experience")}>View Experience</BtnOutlineAmber>
+                {/* Fixed: downloads CV from public folder */}
+                <a
+                  href={RESUME_URL}
+                  download="Abdul_Hanan_CV.pdf"
+                  className="text-sm font-medium px-5 py-2.5 rounded-lg transition-colors hover:opacity-80 inline-flex items-center"
                   style={{ border: `1.5px solid ${C.border}`, color: C.body }}
                 >
                   Download Resume
-                </button>
+                </a>
               </div>
 
               <button
@@ -470,7 +546,7 @@ export default function App() {
               </div>
             </div>
 
-            {/* Right — circle photo, desktop only */}
+            {/* Right */}
             <div className="hidden lg:flex items-center justify-center">
               <div
                 className="flex-shrink-0 overflow-hidden rounded-full"
@@ -498,25 +574,25 @@ export default function App() {
               <SectionLabel>Core Strengths</SectionLabel>
               <SectionHeading>What I Bring</SectionHeading>
             </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {[
-              { icon: "🧠", title: "AI Urdu Tutor", desc: "Native Urdu speaker able to train, annotate and evaluate AI language models in authentic Urdu." },
-              { icon: "💬", title: "Customer Support", desc: "Clear, respectful bilingual communication with clients via phone, email and WhatsApp." },
-              { icon: "⚙️", title: "Operations", desc: "Inventory tracking, record management and operational problem solving — day to day." },
-              { icon: "🔍", title: "Problem Solving", desc: "Finding the root cause of a problem instead of just working around it." },
-              { icon: "💻", title: "Technology", desc: "BSc CS education with practical skills in Excel, Python and JavaScript." },
-            ].map((c) => (
-              <div
-                key={c.title}
-                className="rounded-xl p-5 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
-                style={{ background: C.white, border: `1px solid ${C.border}`, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}
-              >
-                <span className="text-2xl mb-3 block">{c.icon}</span>
-                <h3 className="font-semibold text-sm mb-2" style={{ color: C.text }}>{c.title}</h3>
-                <p className="text-xs leading-relaxed" style={{ color: C.muted }}>{c.desc}</p>
-              </div>
-            ))}
-          </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {[
+                { icon: "🧠", title: "AI Urdu Tutor", desc: "Native Urdu speaker able to train, annotate and evaluate AI language models in authentic Urdu." },
+                { icon: "💬", title: "Customer Support", desc: "Clear, respectful bilingual communication with clients via phone, email and WhatsApp." },
+                { icon: "⚙️", title: "Operations", desc: "Inventory tracking, record management and operational problem solving — day to day." },
+                { icon: "🔍", title: "Problem Solving", desc: "Finding the root cause of a problem instead of just working around it." },
+                { icon: "💻", title: "Technology", desc: "BSc CS education with practical skills in Excel, Python and JavaScript." },
+              ].map((c) => (
+                <div
+                  key={c.title}
+                  className="rounded-xl p-5 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
+                  style={{ background: C.white, border: `1px solid ${C.border}`, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}
+                >
+                  <span className="text-2xl mb-3 block">{c.icon}</span>
+                  <h3 className="font-semibold text-sm mb-2" style={{ color: C.text }}>{c.title}</h3>
+                  <p className="text-xs leading-relaxed" style={{ color: C.muted }}>{c.desc}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -525,7 +601,6 @@ export default function App() {
       <section id="about" className="py-16 sm:py-20" style={{ background: C.white }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
-            {/* Left — heading + text */}
             <div>
               <div className="flex items-center justify-between gap-6 mb-6">
                 <div>
@@ -534,7 +609,6 @@ export default function App() {
                     A Little<br />About Me
                   </h2>
                 </div>
-                {/* Circle photo — right of heading, mobile only */}
                 <div
                   className="flex-shrink-0 lg:hidden overflow-hidden rounded-full"
                   style={{
@@ -565,11 +639,10 @@ export default function App() {
 
               <div className="flex flex-wrap gap-3">
                 <BtnPrimary onClick={() => scrollTo("ai-tutor")}>AI Tutor Work</BtnPrimary>
-                <BtnOutlineAmber href="#">Download Resume</BtnOutlineAmber>
+                <BtnOutlineAmber href={RESUME_URL} download="Abdul_Hanan_CV.pdf">Download Resume</BtnOutlineAmber>
               </div>
             </div>
 
-            {/* Right — Circle photo, desktop only */}
             <div className="hidden lg:flex justify-center items-start pt-4">
               <div
                 className="overflow-hidden rounded-full"
@@ -590,13 +663,11 @@ export default function App() {
 
       {/* ── AI Tutor ── */}
       <section id="ai-tutor" className="py-16 sm:py-20 relative overflow-hidden" style={{ background: C.darkGreen }}>
-        {/* Decorative circles */}
         <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full opacity-10" style={{ background: C.green }} />
         <div className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full opacity-10" style={{ background: C.green }} />
 
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
-            {/* Left */}
             <div>
               <span
                 className="text-xs font-bold uppercase tracking-widest"
@@ -624,7 +695,7 @@ export default function App() {
                   "Available for structured, ongoing training collaboration",
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-3 text-sm" style={{ color: "#c8dfd2" }}>
-                    <span className="mt-0.5 flex-shrink-0 w-1.5 h-1.5 rounded-full mt-1.5" style={{ background: C.amber }} />
+                    <span className="mt-1.5 flex-shrink-0 w-1.5 h-1.5 rounded-full" style={{ background: C.amber }} />
                     {item}
                   </li>
                 ))}
@@ -636,7 +707,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* Right — cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
                 { icon: "🗣️", title: "Conversation Data", desc: "Natural Urdu dialogues, Q&A pairs and support scenarios for training datasets." },
@@ -667,7 +737,6 @@ export default function App() {
           <SectionLabel>Professional History</SectionLabel>
           <SectionHeading>Professional Experience</SectionHeading>
 
-          {/* Timeline */}
           <div className="relative pl-6" style={{ borderLeft: `2px solid ${C.greenBorder}` }}>
             <div
               className="absolute -left-2 top-0 w-4 h-4 rounded-full"
@@ -740,7 +809,6 @@ export default function App() {
               boxShadow: "0 4px 24px rgba(0,0,0,0.06)",
             }}
           >
-            {/* Accent line */}
             <div
               className="h-1"
               style={{ background: `linear-gradient(90deg, ${C.green}, ${C.amber})` }}
@@ -807,7 +875,6 @@ export default function App() {
             Practical problems I've worked on and solutions I've built — from offline retail software to AI-ready tools and operational Excel systems.
           </p>
 
-          {/* Software Projects */}
           <h3 className="font-semibold text-sm mb-4" style={{ color: C.muted }}>Software Projects</h3>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-10">
             {projects.map((p) => (
@@ -816,7 +883,6 @@ export default function App() {
                 className="rounded-2xl overflow-hidden flex flex-col transition-all duration-200 hover:shadow-xl hover:-translate-y-1"
                 style={{ background: C.white, border: `1px solid ${C.border}`, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}
               >
-                {/* Image — constrained on mobile */}
                 <div
                   className="w-full overflow-hidden relative"
                   style={{ background: "#0a0a0a", maxHeight: "200px" }}
@@ -861,7 +927,6 @@ export default function App() {
             ))}
           </div>
 
-          {/* Operations Projects */}
           <h3 className="font-semibold text-sm mb-4" style={{ color: C.muted }}>Operations & Excel Projects</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
             {[
@@ -893,7 +958,7 @@ export default function App() {
 
           <div className="text-center">
             <p className="text-sm mb-3" style={{ color: C.muted }}>Want to see the full project portfolio?</p>
-            <BtnPrimary href="#">Explore Full Portfolio →</BtnPrimary>
+            <BtnPrimary href={PORTFOLIO_URL} target="_blank">Explore Full Portfolio →</BtnPrimary>
           </div>
         </div>
       </section>
@@ -926,7 +991,7 @@ export default function App() {
 
           <div className="text-center">
             <p className="text-sm mb-3" style={{ color: C.muted }}>Want to hear the complete collection?</p>
-            <BtnPrimary href="#">View Full Voice Portfolio →</BtnPrimary>
+            <BtnPrimary href={PORTFOLIO_URL} target="_blank">View Full Voice Portfolio →</BtnPrimary>
           </div>
         </div>
       </section>
@@ -960,7 +1025,6 @@ export default function App() {
           <SectionHeading>How I Work</SectionHeading>
 
           <div className="relative">
-            {/* Connecting line — desktop only */}
             <div
               className="hidden lg:block absolute top-8 left-[12.5%] right-[12.5%] h-px"
               style={{ background: C.border }}
@@ -999,12 +1063,12 @@ export default function App() {
               <p className="urdu text-base" style={{ color: C.amber }}>میرا ریزومے ڈاؤن لوڈ کریں</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3">
-              <BtnPrimary href="#">Download PDF Resume</BtnPrimary>
+              <BtnPrimary href={RESUME_URL} download="Abdul_Hanan_CV.pdf">Download PDF Resume</BtnPrimary>
               <a
                 href={LINKEDIN}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:opacity-80"
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:opacity-80 text-center"
                 style={{ border: `1.5px solid ${C.amber}`, color: C.amber }}
               >
                 View LinkedIn ↗
@@ -1022,12 +1086,12 @@ export default function App() {
             This website gives you a quick picture of who I am. My portfolio goes deeper into projects, work samples and Urdu voice samples.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-3">
-            <BtnOutlineWhite>Explore Full Portfolio →</BtnOutlineWhite>
+            <BtnOutlineWhite href={PORTFOLIO_URL} target="_blank">Explore Full Portfolio →</BtnOutlineWhite>
             <a
               href={LINKEDIN}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:bg-white/10"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:bg-white/10 text-center"
               style={{ color: "#a7d4b8", border: "1.5px solid rgba(255,255,255,0.2)" }}
             >
               Back to LinkedIn ↗
@@ -1043,7 +1107,6 @@ export default function App() {
           <SectionHeading>Let's Connect</SectionHeading>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
-            {/* Left */}
             <div>
               <p className="text-sm leading-relaxed mb-6" style={{ color: C.body }}>
                 Whether you're interested in AI Urdu training, customer support work, or discussing any opportunity — feel free to reach out.
@@ -1162,16 +1225,7 @@ export default function App() {
             </p>
           </div>
           <div className="flex flex-wrap gap-x-5 gap-y-2 mb-8">
-            {[
-              { label: "Home", id: "home" },
-              { label: "About", id: "about" },
-              { label: "AI Tutor", id: "ai-tutor" },
-              { label: "Experience", id: "experience" },
-              { label: "Skills", id: "skills" },
-              { label: "Projects", id: "projects" },
-              { label: "Voice Samples", id: "voice" },
-              { label: "Contact", id: "contact" },
-            ].map((l) => (
+            {navLinks.map((l) => (
               <button
                 key={l.id}
                 onClick={() => scrollTo(l.id)}
@@ -1182,7 +1236,7 @@ export default function App() {
               </button>
             ))}
             <a href={LINKEDIN} target="_blank" rel="noopener noreferrer" className="text-sm transition-colors hover:text-white" style={{ color: "#787878" }}>LinkedIn ↗</a>
-            <a href="#" className="text-sm transition-colors hover:text-white" style={{ color: "#787878" }}>Download Resume</a>
+            <a href={RESUME_URL} download="Abdul_Hanan_CV.pdf" className="text-sm transition-colors hover:text-white" style={{ color: "#787878" }}>Download Resume</a>
           </div>
           <div style={{ borderTop: "1px solid #2a2a2a" }} className="pt-6">
             <p className="text-xs" style={{ color: "#555" }}>© 2026 Abdul Hanan. All rights reserved.</p>
