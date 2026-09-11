@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
-import heroPhoto from "./imports/Image.jpeg";
-import aboutPhoto from "./imports/Image.jpeg";
-import bizLedgerImg from "./imports/Image.png";
-import qrToolImg from "./imports/Image.png";
+import heroPhoto from "./imports/WhatsApp_Image_2026-08-28_at_11.53.53_AM.jpeg";
+import aboutPhoto from "./imports/WhatsApp_Image_2026-08-28_at_11.52.11_AM.jpeg";
+import bizLedgerImg from "./imports/Opera_Snapshot_2026-08-28_172607_BizLedger.html.png";
+import qrToolImg from "./imports/Opera_Snapshot_2026-08-28_172707_claude.ai.png";
 
 // ─── External URLs & Assets ──────────────────────────────────────────────────
 // Points directly to the file placed in your /public folder
