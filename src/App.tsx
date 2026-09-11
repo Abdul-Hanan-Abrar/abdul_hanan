@@ -401,7 +401,8 @@ export default function App() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`https://formsubmit.co/ajax/${EMAIL}`, {
+// ✅ Protected with your FormSubmit Token
+const response = await fetch("https://formsubmit.co/ajax/4e10f0fcb6df30d7f3c7ddc9e146742d", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
