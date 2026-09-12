@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import heroPhoto from "./imports/WhatsApp_Image_2026-08-28_at_11.53.53_AM.jpeg";
 import aboutPhoto from "./imports/WhatsApp_Image_2026-08-28_at_11.52.11_AM.jpeg";
 import bizLedgerImg from "./imports/Opera_Snapshot_2026-08-28_172607_BizLedger.html.png";
@@ -11,8 +11,6 @@ const LINKEDIN = "https://www.linkedin.com/in/abdul-hanan-abrar-8b6a9140b/";
 const EMAIL = "abdulhananabrar941@gmail.com";
 
 // ─── Smart Email Action Dispatcher ────────────────────────────────────────────
-// Mobile: launches native Gmail / Mail application
-// Desktop: opens Gmail web composer in a new browser tab
 const handleEmailClick = (e: React.MouseEvent) => {
   e.preventDefault();
   const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -28,7 +26,7 @@ const handleEmailClick = (e: React.MouseEvent) => {
   }
 };
 
-// ─── Color constants ─────────────────────────────────────────────────────────
+// ─── Color Constants ─────────────────────────────────────────────────────────
 const C = {
   bg: "#F8F7F4",
   white: "#FFFFFF",
@@ -46,13 +44,10 @@ const C = {
   border: "#E3DED7",
 };
 
-// ─── Reusable components ──────────────────────────────────────────────────────
+// ─── UI Helpers ──────────────────────────────────────────────────────────────
 function SectionLabel({ children }: { children: string }) {
   return (
-    <span
-      className="text-xs font-semibold uppercase tracking-widest"
-      style={{ color: C.green }}
-    >
+    <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: C.green }}>
       {children}
     </span>
   );
@@ -60,10 +55,7 @@ function SectionLabel({ children }: { children: string }) {
 
 function SectionHeading({ children, light = false }: { children: string; light?: boolean }) {
   return (
-    <h2
-      className="text-3xl sm:text-4xl font-bold mt-2 mb-6"
-      style={{ color: light ? "#fff" : C.text }}
-    >
+    <h2 className="text-3xl sm:text-4xl font-bold mt-2 mb-6" style={{ color: light ? "#fff" : C.text }}>
       {children}
     </h2>
   );
@@ -102,14 +94,7 @@ function BtnPrimary({
   const style = { background: C.green, color: "#fff" };
   if (href) {
     return (
-      <a
-        href={href}
-        download={download}
-        target={target}
-        rel={target === "_blank" ? "noopener noreferrer" : undefined}
-        className={cls}
-        style={style}
-      >
+      <a href={href} download={download} target={target} rel={target === "_blank" ? "noopener noreferrer" : undefined} className={cls} style={style}>
         {children}
       </a>
     );
@@ -135,14 +120,7 @@ function BtnOutlineAmber({
   const style = { border: `1.5px solid ${C.amber}`, color: C.amber, background: "transparent" };
   if (href) {
     return (
-      <a
-        href={href}
-        download={download}
-        target={target}
-        rel={target === "_blank" ? "noopener noreferrer" : undefined}
-        className={cls}
-        style={style}
-      >
+      <a href={href} download={download} target={target} rel={target === "_blank" ? "noopener noreferrer" : undefined} className={cls} style={style}>
         {children}
       </a>
     );
@@ -166,22 +144,12 @@ function BtnOutlineWhite({
   const style = { border: "1.5px solid rgba(255,255,255,0.5)", color: "#fff" };
   if (href) {
     return (
-      <a
-        href={href}
-        target={target}
-        rel={target === "_blank" ? "noopener noreferrer" : undefined}
-        className={cls}
-        style={style}
-      >
+      <a href={href} target={target} rel={target === "_blank" ? "noopener noreferrer" : undefined} className={cls} style={style}>
         {children}
       </a>
     );
   }
-  return (
-    <button onClick={onClick} className={cls} style={style}>
-      {children}
-    </button>
-  );
+  return <button onClick={onClick} className={cls} style={style}>{children}</button>;
 }
 
 // ─── Project Modal ────────────────────────────────────────────────────────────
@@ -214,11 +182,7 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
         onClick={(e) => e.stopPropagation()}
       >
         <div className="relative w-full" style={{ background: "#0a0a0a" }}>
-          <img
-            src={project.image}
-            alt={project.title}
-            className="w-full object-contain max-h-[50vh]"
-          />
+          <img src={project.image} alt={project.title} className="w-full object-contain max-h-[50vh]" />
           <button
             onClick={onClose}
             className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-lg transition-opacity hover:opacity-80"
@@ -245,9 +209,7 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
           <div className="flex flex-wrap gap-2 mb-4">
             {project.tags.map((t) => <Tag key={t}>{t}</Tag>)}
           </div>
-          {project.meta && (
-            <p className="text-xs" style={{ color: C.muted }}>{project.meta}</p>
-          )}
+          {project.meta && <p className="text-xs" style={{ color: C.muted }}>{project.meta}</p>}
           <div className="mt-6 flex justify-end">
             <button
               onClick={onClose}
@@ -263,28 +225,85 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
   );
 }
 
-// ─── Audio Player Card ────────────────────────────────────────────────────────
+// ─── Native Zero-Latency Audio Card ───────────────────────────────────────────
 function AudioCard({
   title,
   titleUrdu,
   description,
-  duration,
-  driveId,
+  audioSrc,
+  isPlaying,
+  onTogglePlay,
 }: {
   title: string;
   titleUrdu: string;
   description: string;
-  duration: string;
-  driveId: string;
+  audioSrc: string;
+  isPlaying: boolean;
+  onTogglePlay: () => void;
 }) {
-  const [open, setOpen] = useState(false);
-  const embedUrl = `https://drive.google.com/file/d/${driveId}/preview`;
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [progress, setProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState("0:00");
+  const [duration, setDuration] = useState("0:00");
+
+  const formatTime = (secs: number) => {
+    if (isNaN(secs) || secs === Infinity) return "0:00";
+    const minutes = Math.floor(secs / 60);
+    const seconds = Math.floor(secs % 60);
+    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  };
+
+  useEffect(() => {
+    if (!audioRef.current) return;
+    if (isPlaying) {
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {});
+      }
+    } else {
+      audioRef.current.pause();
+    }
+  }, [isPlaying]);
+
+  const handleTimeUpdate = () => {
+    if (!audioRef.current) return;
+    const curr = audioRef.current.currentTime;
+    const dur = audioRef.current.duration || 0;
+    setProgress(dur > 0 ? (curr / dur) * 100 : 0);
+    setCurrentTime(formatTime(curr));
+  };
+
+  const handleLoadedMetadata = () => {
+    if (!audioRef.current) return;
+    setDuration(formatTime(audioRef.current.duration));
+  };
+
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!audioRef.current) return;
+    const val = parseFloat(e.target.value);
+    const seekTime = (val / 100) * (audioRef.current.duration || 0);
+    audioRef.current.currentTime = seekTime;
+    setProgress(val);
+  };
 
   return (
     <div
       className="rounded-xl overflow-hidden transition-all duration-200 hover:shadow-md"
-      style={{ background: C.white, border: `1px solid ${C.border}`, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}
+      style={{
+        background: C.white,
+        border: isPlaying ? `1.5px solid ${C.green}` : `1px solid ${C.border}`,
+        boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+      }}
     >
+      <audio
+        ref={audioRef}
+        src={audioSrc}
+        preload="metadata"
+        onTimeUpdate={handleTimeUpdate}
+        onLoadedMetadata={handleLoadedMetadata}
+        onEnded={onTogglePlay}
+      />
+
       <div className="p-5 flex flex-col gap-3">
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -292,48 +311,57 @@ function AudioCard({
             <p className="urdu text-sm mt-0.5" style={{ color: C.green }}>{titleUrdu}</p>
           </div>
           <button
-            onClick={() => setOpen((v) => !v)}
-            className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-105 active:scale-95"
-            style={{ background: open ? C.darkGreen : C.green }}
-            aria-label={open ? "Close player" : `Play ${title}`}
+            onClick={onTogglePlay}
+            className="flex-shrink-0 w-11 h-11 rounded-full flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-sm"
+            style={{ background: isPlaying ? C.darkGreen : C.green }}
+            aria-label={isPlaying ? `Pause ${title}` : `Play ${title}`}
           >
-            {open ? (
+            {isPlaying ? (
               <svg width="12" height="14" viewBox="0 0 12 14" fill="white">
                 <rect x="0" y="0" width="4" height="14" rx="1" />
                 <rect x="8" y="0" width="4" height="14" rx="1" />
               </svg>
             ) : (
-              <svg width="12" height="14" viewBox="0 0 12 14" fill="white">
+              <svg width="12" height="14" viewBox="0 0 12 14" fill="white" className="translate-x-0.5">
                 <path d="M1 0.5L11 7L1 13.5V0.5Z" />
               </svg>
             )}
           </button>
         </div>
-        <p className="text-xs" style={{ color: C.muted }}>{description}</p>
-        <p className="text-xs" style={{ color: C.muted }}>Duration: {duration}</p>
-      </div>
 
-      {open && (
-        <div style={{ borderTop: `1px solid ${C.border}` }}>
-          <iframe
-            src={embedUrl}
-            width="100%"
-            height="80"
-            allow="autoplay"
-            style={{ display: "block", border: "none" }}
-            title={title}
+        <p className="text-xs" style={{ color: C.muted }}>{description}</p>
+
+        {/* ── Visual Scrubber ── */}
+        <div className="mt-2 flex flex-col gap-1.5">
+          <input
+            type="range"
+            min="0"
+            max="100"
+            step="0.1"
+            value={progress}
+            onChange={handleSeek}
+            className="w-full h-1.5 rounded-lg appearance-none cursor-pointer"
+            style={{
+              accentColor: C.green,
+              background: `linear-gradient(to right, ${C.green} ${progress}%, ${C.border} ${progress}%)`,
+            }}
           />
+          <div className="flex justify-between text-[11px] font-mono" style={{ color: C.muted }}>
+            <span>{currentTime}</span>
+            <span>{duration}</span>
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
 
-// ─── Main App ─────────────────────────────────────────────────────────────────
+// ─── Main Application ─────────────────────────────────────────────────────────
 export default function App() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [activeAudioId, setActiveAudioId] = useState<string | null>(null);
   const [formData, setFormData] = useState({ name: "", email: "", topic: "", message: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formSent, setFormSent] = useState(false);
@@ -395,14 +423,30 @@ export default function App() {
     },
   ];
 
-  // ─── Direct Form Delivery to abdulhananabrar941@gmail.com ─────────────────────
+  // ─── Direct URLs Configured for public/ ──────────────────────────────────────
+  const voiceSamples = [
+    {
+      id: "audio-conversational",
+      title: "Natural Conversational Urdu",
+      titleUrdu: "قدرتی اردو گفتگو",
+      description: "A natural, conversational Urdu sample demonstrating authentic everyday speech.",
+      audioSrc: `${import.meta.env.BASE_URL}Natural%20Conversational%20Urdu.m4a`,
+    },
+    {
+      id: "audio-codeswitching",
+      title: "Natural Urdu-English Communication",
+      titleUrdu: "اردو انگریزی — مشترکہ گفتگو",
+      description: "Natural switching between Urdu and English — the way Pakistanis actually communicate.",
+      audioSrc: `${import.meta.env.BASE_URL}Natural%20Urdu-English%20Communication.m4a`,
+    },
+  ];
+
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-// ✅ Protected with your FormSubmit Token
-const response = await fetch("https://formsubmit.co/ajax/4e10f0fcb6df30d7f3c7ddc9e146742d", {
+      const response = await fetch("https://formsubmit.co/ajax/4e10f0fcb6df30d7f3c7ddc9e146742d", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -450,7 +494,6 @@ const response = await fetch("https://formsubmit.co/ajax/4e10f0fcb6df30d7f3c7ddc
             Abdul Hanan
           </button>
 
-          {/* Desktop nav */}
           <div className="hidden lg:flex items-center gap-6">
             {navLinks.map((n) => (
               <button
@@ -470,7 +513,6 @@ const response = await fetch("https://formsubmit.co/ajax/4e10f0fcb6df30d7f3c7ddc
             <a href={LINKEDIN} target="_blank" rel="noopener noreferrer" className="text-sm font-medium" style={{ color: C.muted }}>LinkedIn ↗</a>
           </div>
 
-          {/* Mobile hamburger */}
           <button
             className="lg:hidden flex flex-col gap-1.5 p-2"
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -481,7 +523,6 @@ const response = await fetch("https://formsubmit.co/ajax/4e10f0fcb6df30d7f3c7ddc
           </button>
         </div>
 
-        {/* Mobile drawer */}
         {mobileOpen && (
           <div
             className="lg:hidden px-4 pb-4 pt-2 flex flex-col gap-1"
@@ -512,8 +553,6 @@ const response = await fetch("https://formsubmit.co/ajax/4e10f0fcb6df30d7f3c7ddc
       <section id="home" className="pt-24 pb-16 sm:pt-28 sm:pb-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-10 lg:gap-20 items-center">
-
-            {/* Left */}
             <div>
               <span
                 className="inline-block text-xs font-semibold px-3 py-1 rounded-full mb-5"
@@ -585,7 +624,6 @@ const response = await fetch("https://formsubmit.co/ajax/4e10f0fcb6df30d7f3c7ddc
               </div>
             </div>
 
-            {/* Right */}
             <div className="hidden lg:flex items-center justify-center">
               <div
                 className="flex-shrink-0 overflow-hidden rounded-full"
@@ -600,12 +638,11 @@ const response = await fetch("https://formsubmit.co/ajax/4e10f0fcb6df30d7f3c7ddc
                 <img src={heroPhoto} alt="Abdul Hanan" className="w-full h-full object-cover object-top" />
               </div>
             </div>
-
           </div>
         </div>
       </section>
 
-      {/* ── What I Bring ── */}
+      {/* ── Strengths ── */}
       <section id="strengths" className="py-12 sm:py-16" style={{ background: C.altBg }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-8 lg:gap-12 items-start">
@@ -708,10 +745,7 @@ const response = await fetch("https://formsubmit.co/ajax/4e10f0fcb6df30d7f3c7ddc
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
             <div>
-              <span
-                className="text-xs font-bold uppercase tracking-widest"
-                style={{ color: C.amber }}
-              >
+              <span className="text-xs font-bold uppercase tracking-widest" style={{ color: C.amber }}>
                 Open to AI & Language Opportunities
               </span>
               <h2 className="text-3xl sm:text-4xl font-bold mt-3 mb-2 text-white leading-tight">
@@ -777,17 +811,11 @@ const response = await fetch("https://formsubmit.co/ajax/4e10f0fcb6df30d7f3c7ddc
           <SectionHeading>Professional Experience</SectionHeading>
 
           <div className="relative pl-6" style={{ borderLeft: `2px solid ${C.greenBorder}` }}>
-            <div
-              className="absolute -left-2 top-0 w-4 h-4 rounded-full"
-              style={{ background: C.green }}
-            />
+            <div className="absolute -left-2 top-0 w-4 h-4 rounded-full" style={{ background: C.green }} />
             <div className="mb-6">
               <div className="flex flex-wrap items-center gap-3 mb-1">
                 <h3 className="text-xl font-bold" style={{ color: C.text }}>Aptly Pharmaceuticals</h3>
-                <span
-                  className="text-xs font-semibold px-2 py-0.5 rounded-full"
-                  style={{ background: C.lightGreen, color: C.darkGreen }}
-                >
+                <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: C.lightGreen, color: C.darkGreen }}>
                   Currently Here
                 </span>
               </div>
@@ -848,10 +876,7 @@ const response = await fetch("https://formsubmit.co/ajax/4e10f0fcb6df30d7f3c7ddc
               boxShadow: "0 4px 24px rgba(0,0,0,0.06)",
             }}
           >
-            <div
-              className="h-1"
-              style={{ background: `linear-gradient(90deg, ${C.green}, ${C.amber})` }}
-            />
+            <div className="h-1" style={{ background: `linear-gradient(90deg, ${C.green}, ${C.amber})` }} />
             <div className="p-8">
               <h3 className="text-xl font-bold mb-1" style={{ color: C.text }}>Bachelor of Science in Computer Science</h3>
               <p className="font-semibold text-sm mb-1" style={{ color: C.green }}>University of Agriculture, Faisalabad (UAF)</p>
@@ -922,10 +947,7 @@ const response = await fetch("https://formsubmit.co/ajax/4e10f0fcb6df30d7f3c7ddc
                 className="rounded-2xl overflow-hidden flex flex-col transition-all duration-200 hover:shadow-xl hover:-translate-y-1"
                 style={{ background: C.white, border: `1px solid ${C.border}`, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}
               >
-                <div
-                  className="w-full overflow-hidden relative"
-                  style={{ background: "#0a0a0a", maxHeight: "200px" }}
-                >
+                <div className="w-full overflow-hidden relative" style={{ background: "#0a0a0a", maxHeight: "200px" }}>
                   <img
                     src={p.image}
                     alt={p.title + " screenshot"}
@@ -951,9 +973,7 @@ const response = await fetch("https://formsubmit.co/ajax/4e10f0fcb6df30d7f3c7ddc
                   <div className="flex flex-wrap gap-1.5 mb-4">
                     {p.tags.map((t) => <Tag key={t}>{t}</Tag>)}
                   </div>
-                  {p.meta && (
-                    <p className="text-xs mb-3" style={{ color: C.muted }}>{p.meta}</p>
-                  )}
+                  {p.meta && <p className="text-xs mb-3" style={{ color: C.muted }}>{p.meta}</p>}
                   <button
                     onClick={() => setSelectedProject(p)}
                     className="text-sm font-semibold transition-colors hover:opacity-70 text-left"
@@ -1002,7 +1022,7 @@ const response = await fetch("https://formsubmit.co/ajax/4e10f0fcb6df30d7f3c7ddc
         </div>
       </section>
 
-      {/* ── Voice Samples ── */}
+      {/* ── Voice Samples (Zero Latency HTML5 Audio) ── */}
       <section id="voice" className="py-16 sm:py-20" style={{ background: C.white }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <SectionLabel>Audio Samples</SectionLabel>
@@ -1012,20 +1032,19 @@ const response = await fetch("https://formsubmit.co/ajax/4e10f0fcb6df30d7f3c7ddc
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-            <AudioCard
-              title="Natural Conversational Urdu"
-              titleUrdu="قدرتی اردو گفتگو"
-              description="A natural, conversational Urdu sample demonstrating authentic everyday speech."
-              duration="0:57"
-              driveId="1HwU5rnsZRMyuXdO0r0dKWlIb9KCyvkWS"
-            />
-            <AudioCard
-              title="Natural Urdu-English Communication"
-              titleUrdu="اردو انگریزی — مشترکہ گفتگو"
-              description="Natural switching between Urdu and English — the way Pakistanis actually communicate."
-              duration="1:03"
-              driveId="1zc2Ueipl-LcaeeI5lsYRUM3g10GxI4jY"
-            />
+            {voiceSamples.map((sample) => (
+              <AudioCard
+                key={sample.id}
+                title={sample.title}
+                titleUrdu={sample.titleUrdu}
+                description={sample.description}
+                audioSrc={sample.audioSrc}
+                isPlaying={activeAudioId === sample.id}
+                onTogglePlay={() =>
+                  setActiveAudioId((current) => (current === sample.id ? null : sample.id))
+                }
+              />
+            ))}
           </div>
 
           <div className="text-center">
@@ -1151,7 +1170,6 @@ const response = await fetch("https://formsubmit.co/ajax/4e10f0fcb6df30d7f3c7ddc
                 Whether you're interested in AI Urdu training, customer support work, or discussing any opportunity — feel free to reach out.
               </p>
               <div className="space-y-3 mb-6">
-                {/* Fixed: Smart Email Click Handler */}
                 <a
                   href={`mailto:${EMAIL}`}
                   onClick={handleEmailClick}
