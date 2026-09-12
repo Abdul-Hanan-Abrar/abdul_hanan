@@ -6,7 +6,7 @@ import qrToolImg from "./imports/Opera_Snapshot_2026-08-28_172707_claude.ai.png"
 
 // ─── External URLs & Dynamic Paths ───────────────────────────────────────────
 const RESUME_URL = `${import.meta.env.BASE_URL}resume.pdf`;
-const PORTFOLIO_URL = "https://github.com/Abdul-Hanan-Abrar";
+const PORTFOLIO_URL = "https://abdul-hanan-abrar.github.io/Portfolio/";
 const LINKEDIN = "https://www.linkedin.com/in/abdul-hanan-abrar-8b6a9140b/";
 const EMAIL = "abdulhananabrar941@gmail.com";
 
